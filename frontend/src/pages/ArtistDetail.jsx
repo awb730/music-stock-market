@@ -12,7 +12,7 @@ export default function ArtistDetail({ artist, onBack }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/artist/${artist.artist_id}/history`)
+    axios.get(`${import.meta.env.VITE_API_URL}/artist/${artist.artist_id}/history`)
       .then(res => setHistory(res.data))
       .finally(() => setLoading(false))
   }, [artist])

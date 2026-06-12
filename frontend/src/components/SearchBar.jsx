@@ -11,7 +11,7 @@ export default function SearchBar({ onResult }) {
     setLoading(true)
     setError(null)
     try {
-      const res = await axios.get(`http://localhost:8000/search?name=${encodeURIComponent(query)}`)
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/search?name=${encodeURIComponent(query)}`)
       onResult(res.data)
     } catch (e) {
         console.error(e)

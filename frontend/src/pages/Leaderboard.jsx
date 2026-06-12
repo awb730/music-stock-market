@@ -8,7 +8,7 @@ export default function Leaderboard({ onSelect }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get("http://localhost:8000/leaderboard")
+    axios.get(`${import.meta.env.VITE_API_URL}/leaderboard`)
       .then(res => setArtists(res.data))
       .finally(() => setLoading(false))
   }, [])
