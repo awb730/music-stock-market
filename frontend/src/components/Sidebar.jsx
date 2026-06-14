@@ -1,0 +1,52 @@
+export default function Sidebar({ activePage, setActivePage }) {
+  return (
+    <aside className="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant/20 py-6 z-[60]">
+      
+      <div className="px-6 mb-10 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+          <span className="material-symbols-outlined text-on-primary-container text-[18px]">music_note</span>
+        </div>
+        <div>
+          <h2 className="text-secondary font-bold text-lg leading-none">UMX Terminal</h2>
+          <span className="font-mono text-[10px] text-tertiary uppercase tracking-widest mt-1 block">Market Open</span>
+        </div>
+      </div>
+
+      <nav className="flex-grow space-y-1">
+        <button
+          onClick={() => setActivePage("leaderboard")}
+          className={`w-full flex items-center gap-3 px-4 py-3 transition-all ${
+            activePage === "leaderboard"
+              ? "bg-secondary-container/20 text-secondary border-l-4 border-secondary"
+              : "text-on-surface-variant hover:bg-white/5"
+          }`}
+        >
+          <span className="material-symbols-outlined">leaderboard</span>
+          <span className="font-mono text-sm">Leaderboard</span>
+        </button>
+        <button
+          onClick={() => setActivePage("portfolio")}
+          className={`w-full flex items-center gap-3 px-4 py-3 transition-all ${
+            activePage === "portfolio"
+              ? "bg-secondary-container/20 text-secondary border-l-4 border-secondary"
+              : "text-on-surface-variant hover:bg-white/5"
+          }`}
+        >
+          <span className="material-symbols-outlined">pie_chart</span>
+          <span className="font-mono text-sm">Portfolio</span>
+        </button>
+      </nav>
+
+      <div className="space-y-1">
+        <a href="#" className="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-white/5 transition-all">
+          <span className="material-symbols-outlined">help</span>
+          <span className="font-mono text-sm">Support</span>
+        </a>
+        <a href="#" className="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-white/5 transition-all">
+          <span className="material-symbols-outlined">settings</span>
+          <span className="font-mono text-sm">Settings</span>
+        </a>
+      </div>
+    </aside>
+  )
+}

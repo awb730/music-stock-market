@@ -7,6 +7,28 @@ function formatNumber(n) {
   return n?.toLocaleString() ?? "—"
 }
 
+function StatCard({ label, value, sub, valueColor = "text-on-surface" }) {
+  return (
+    <div className="glass-card rounded-xl p-5">
+      <p className="text-outline uppercase font-mono text-[11px] tracking-widest mb-2">{label}</p>
+      <p className={`text-2xl font-bold ${valueColor}`}>{value}</p>
+      {sub && <p className="text-on-surface-variant text-xs mt-1 font-mono">{sub}</p>}
+    </div>
+  )
+}
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-card px-4 py-3 rounded-lg border border-outline-variant/30">
+        <p className="text-outline font-mono text-[11px] mb-1">{label}</p>
+        <p className="text-secondary font-mono text-sm font-bold">{formatNumber(payload[0].value)}</p>
+      </div>
+    )
+  }
+  return null
+}
+
 export default function ArtistDetail({ artist, onBack }) {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
@@ -17,45 +39,109 @@ export default function ArtistDetail({ artist, onBack }) {
       .finally(() => setLoading(false))
   }, [artist])
 
+  const growth7dColor = artist.listener_growth_7d >= 0 ? "text-tertiary" : "text-rose-400"
+  const growth30dColor = artist.listener_growth_30d >= 0 ? "text-tertiary" : "text-rose-400"
+  const accelColor = artist.acceleration >= 0 ? "text-tertiary" : "text-rose-400"
 
   return (
     <div>
-      <button onClick={onBack} className="text-gray-400 hover:text-white mb-6 text-sm underline">
-        ← Back to Leaderboard
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-on-surface-variant hover:text-secondary transition-colors mb-8 font-mono text-sm"
+      >
+        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        Back to Leaderboard
       </button>
 
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold">{artist.name[0].toUpperCase() + artist.name.slice(1, artist.length)}</h2>
-        <div className="mt-2"><SignalBadge signal={artist.signal} /></div>
+      {/* Artist Header */}
+      <div className="glass-card rounded-xl p-8 mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 rounded-xl bg-surface-variant flex items-center justify-center">
+            <span className="material-symbols-outlined text-outline text-[32px]">person</span>
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-on-surface mb-2">
+              {artist.name.charAt(0).toUpperCase() + artist.name.slice(1)}
+            </h1>
+            <SignalBadge signal={artist.signal} />
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-outline font-mono text-[11px] uppercase tracking-widest mb-1">Total Listeners</p>
+          <p className="text-3xl font-bold text-on-surface">{formatNumber(artist.listeners_now)}</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <StatCard label="Listeners" value={formatNumber(artist.listeners_now)} />
-        <StatCard label="7D Growth" value={`${artist.listener_growth_7d}%`} />
-        <StatCard label="30D Growth" value={`${artist.listener_growth_30d}%`} />
-        <StatCard label="Z-Score" value={artist.z_score} />
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <StatCard
+          label="7D Growth"
+          value={`${artist.listener_growth_7d >= 0 ? "+" : ""}${artist.listener_growth_7d}%`}
+          sub="Last 7 days"
+          valueColor={growth7dColor}
+        />
+        <StatCard
+          label="30D Growth"
+          value={`${artist.listener_growth_30d >= 0 ? "+" : ""}${artist.listener_growth_30d}%`}
+          sub="Last 30 days"
+          valueColor={growth30dColor}
+        />
+        <StatCard
+          label="Acceleration"
+          value={artist.acceleration}
+          sub="Momentum shift"
+          valueColor={accelColor}
+        />
+        <StatCard
+          label="Z-Score"
+          value={artist.z_score}
+          sub="Signal strength"
+          valueColor="text-secondary"
+        />
       </div>
 
-      <h3 className="text-lg font-semibold mb-4">Listener History</h3>
-      {loading ? <p className="text-gray-400">Loading chart...</p> : (
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={history}>
-            <XAxis dataKey="date" tick={{ fill: "#9ca3af", fontSize: 11 }} tickFormatter={formatNumber} />
-            <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} />
-            <Tooltip contentStyle={{ backgroundColor: "#111827", border: "none" }} formatter={(value) => [formatNumber(value), "Listeners"]} />
-            <Line type="monotone" dataKey="listeners" stroke="#22c55e" dot={false} strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      )}
-    </div>
-  )
-}
+      {/* Chart */}
+      <div className="glass-card rounded-xl p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-lg font-bold text-on-surface">Listener History</h3>
+            <p className="text-on-surface-variant text-sm font-mono mt-1">30 day momentum curve</p>
+          </div>
+          <span className="material-symbols-outlined text-outline">show_chart</span>
+        </div>
 
-function StatCard({ label, value }) {
-  return (
-    <div className="bg-gray-900 rounded-lg p-4">
-      <p className="text-gray-400 text-xs mb-1">{label}</p>
-      <p className="text-xl font-bold">{value}</p>
+        {loading ? (
+          <div className="h-[300px] flex items-center justify-center">
+            <p className="text-outline font-mono text-sm animate-pulse">Loading chart...</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={history}>
+              <XAxis
+                dataKey="date"
+                tick={{ fill: "#958ea0", fontSize: 11, fontFamily: "JetBrains Mono" }}
+                axisLine={{ stroke: "#494454" }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: "#958ea0", fontSize: 11, fontFamily: "JetBrains Mono" }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={formatNumber}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="listeners"
+                stroke="#4cd7f6"
+                dot={false}
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   )
 }
