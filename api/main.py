@@ -109,7 +109,7 @@ def leaderboard():
             **features
         })
     priority = {"BREAKOUT": 0, "RISING": 1, "STABLE": 2, "COOLING": 3, "DORMANT": 4}
-    results.sort(key=lambda x: (priority.get(x["signal"], 99), -x["listener_growth_7d"]))
+    results.sort(key=lambda x: (priority.get(x["signal"], 99), -x["listener_growth_30d"]))
     return results
 
 @app.get("/search")

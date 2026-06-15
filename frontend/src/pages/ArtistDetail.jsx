@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import SignalBadge from "../components/SignalBadge"
+import InvestModal from "../components/InvestModal"
 
 function formatNumber(n) {
   return n?.toLocaleString() ?? "—"
@@ -29,9 +30,10 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null
 }
 
-export default function ArtistDetail({ artist, onBack }) {
+export default function ArtistDetail({ artist, onBack, user, setUser }) {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/artist/${artist.artist_id}/history`)
@@ -42,6 +44,14 @@ export default function ArtistDetail({ artist, onBack }) {
   const growth7dColor = artist.listener_growth_7d >= 0 ? "text-tertiary" : "text-rose-400"
   const growth30dColor = artist.listener_growth_30d >= 0 ? "text-tertiary" : "text-rose-400"
   const accelColor = artist.acceleration >= 0 ? "text-tertiary" : "text-rose-400"
+
+  const handleInvestSuccess = (creditsWagered) => {
+    setShowModal(false)
+    // Update user credits locally
+    const newCredits = (user.credits || 0) - creditsWagered
+    localStorage.setItem("credits", newCredits)
+    setUser(prev => ({ ...prev, credits: newCredits }))
+  }
 
   return (
     <div>
@@ -67,12 +77,30 @@ export default function ArtistDetail({ artist, onBack }) {
             <SignalBadge signal={artist.signal} />
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-outline font-mono text-[11px] uppercase tracking-widest mb-1">Total Listeners</p>
-          <p className="text-3xl font-bold text-on-surface">{formatNumber(artist.listeners_now)}</p>
+        <div className="flex flex-col items-end gap-3">
+          <div className="text-right">
+            <p className="text-outline font-mono text-[11px] uppercase tracking-widest mb-1">Total Listeners</p>
+            <p className="text-3xl font-bold text-on-surface">{formatNumber(artist.listeners_now)}</p>
+          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 bg-secondary-container text-on-secondary-container font-mono font-bold text-sm px-5 py-2.5 rounded-lg hover:brightness-110 transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">add_chart</span>
+            Invest
+          </button>
         </div>
       </div>
 
+      {/* Invest Modal */}
+      {showModal && (
+        <InvestModal
+          artist={artist}
+          user={user}
+          onClose={() => setShowModal(false)}
+          onSuccess={handleInvestSuccess}
+        />
+      )}
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard

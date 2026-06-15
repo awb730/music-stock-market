@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from "axios"
 import Sidebar from "./components/Sidebar"
 import Header from "./components/Header"
 import Leaderboard from "./pages/Leaderboard"
 import ArtistDetail from "./pages/ArtistDetail"
+import Portfolio from "./pages/Portfolio"
 import Auth from "./pages/Auth"
 
 export default function App() {
@@ -23,6 +24,11 @@ export default function App() {
   const [searchError, setSearchError] = useState(null)
   const [searching, setSearching] = useState(false)
 
+  const handleNavigate = (page) => {
+    setActivePage(page);
+    setSelectedArtist(null);
+  }
+
   const handleLogin = (userData) => {
     setUser(userData)
   }
@@ -35,37 +41,58 @@ export default function App() {
   }
 
   const handleSearch = async (query) => {
-    if (!query.trim()) return
-    setSearching(true)
-    setSearchError(null)
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/search?name=${encodeURIComponent(query)}`)
-      setArtists(prev => {
-        const exists = prev.find(a => a.artist_id === res.data.artist_id)
-        if (exists) return prev
-        return [...prev, res.data]
-      })
-      setSelectedArtist(res.data)
-      setSearchQuery("")
-    } catch {
-      setSearchError("Artist not found. Try a different name.")
-    } finally {
-      setSearching(false)
-    }
+      if (!query.trim()) return
+      setSearching(true)
+      setSearchError(null)
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/search?name=${encodeURIComponent(query)}`)
+        setArtists(prev => {
+          const exists = prev.find(a => a.artist_id === res.data.artist_id)
+          const updated = exists ? prev : [...prev, res.data]
+          const priority = { BREAKOUT: 0, RISING: 1, STABLE: 2, COOLING: 3, DORMANT: 4 }
+          return [...updated].sort((a, b) => {
+            const sigDiff = (priority[a.signal] ?? 99) - (priority[b.signal] ?? 99)
+            if (sigDiff !== 0) return sigDiff
+            return b.listener_growth_30d - a.listener_growth_30d
+          })
+        })
+        setSelectedArtist(res.data)
+        setSearchQuery("")
+      } catch {
+        setSearchError("Artist not found. Try a different name.")
+      } finally {
+        setSearching(false)
+      }
   }
+
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token")
+          localStorage.removeItem("username")
+          localStorage.removeItem("credits")
+          setUser(null)
+        }
+        return Promise.reject(error)
+      }
+    )
+    return () => axios.interceptors.response.eject(interceptor)
+  }, [])
 
   if (!user) return <Auth onLogin={handleLogin} />
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex">
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      <Sidebar activePage={activePage} setActivePage={handleNavigate} />
 
       <main className="lg:ml-64 flex-1 flex flex-col min-h-screen">
         <Header
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           activePage={activePage}
-          setActivePage={setActivePage}
+          setActivePage={handleNavigate}
           onSearch={handleSearch}
           searching={searching}
           searchError={searchError}
@@ -74,23 +101,27 @@ export default function App() {
         />
 
         <section className="p-6 max-w-[1440px] mx-auto w-full">
-          {selectedArtist ? (
-            <ArtistDetail
-              artist={selectedArtist}
-              onBack={() => setSelectedArtist(null)}
-              user={user}
-              setUser={setUser}
-            />
-          ) : (
-            <Leaderboard
-              onSelect={setSelectedArtist}
-              artists={artists}
-              setArtists={setArtists}
-              onSearch={handleSearch}
-              searching={searching}
-              searchError={searchError}
-            />
-          )}
+          <section className="p-6 max-w-[1440px] mx-auto w-full">
+            {selectedArtist ? (
+              <ArtistDetail
+                artist={selectedArtist}
+                onBack={() => setSelectedArtist(null)}
+                user={user}
+                setUser={setUser}
+              />
+            ) : activePage === "portfolio" ? (
+              <Portfolio user={user} setUser={setUser} />
+            ) : (
+              <Leaderboard
+                onSelect={setSelectedArtist}
+                artists={artists}
+                setArtists={setArtists}
+                onSearch={handleSearch}
+                searching={searching}
+                searchError={searchError}
+              />
+            )}
+          </section>
         </section>
       </main>
 
