@@ -25,9 +25,9 @@ class LoginRequest(BaseModel):
     password: str
 
 class OpenPositionRequest(BaseModel):
-    artist_id: str
+    artist_id: int
     direction: str
-    credits_wagered: str
+    credits_wagered: int
 
 
 app = FastAPI(title="Music Quant API")
@@ -71,7 +71,7 @@ def artist_history(artist_id: int):
     return df[["date", "listeners"]].to_dict(orient="records")
 
 
-@app.get("/artist/{artist_id}/metrics}")
+@app.get("/artist/{artist_id}/metrics")
 def artist_metrics(artist_id: int):
     df = get_artist_history(artist_id)
     if df.empty:
@@ -254,7 +254,8 @@ def get_portfolio(current_user: dict = Depends(get_current_user)):
     cursor = conn.cursor()
 
     cursor.execute("SELECT credits FROM users WHERE id = %s;", (user_id,))
-    credits = cursor.fetchone()
+    row = cursor.fetchone()
+    credits = row[0] if row else 0
 
     cursor.execute("""
         SELECT p.id, a.name, p.direction, p.credits_wagered,
