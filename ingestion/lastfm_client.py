@@ -26,6 +26,9 @@ def get_artist(artist_name: str) -> dict:
     response.raise_for_status()
     data = response.json()
 
+    import json
+    print(json.dumps(data["artist"].get("image"), indent=2))
+
     artist = data["artist"]
     return {
         "name": artist["name"],

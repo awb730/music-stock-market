@@ -1,3 +1,5 @@
+import ArtistAvatar from "./ArtistAvatar"
+
 export default function Header({ searchQuery, setSearchQuery, activePage, setActivePage, onSearch, searching, searchError, user, onLogout }) {
 
   const handleKeyDown = (e) => {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import SignalBadge from "../components/SignalBadge"
+import ArtistAvatar from "../components/ArtistAvatar"
 
 function StatCard({ icon, label, value, sub, subColor = "text-tertiary" }) {
   return (
@@ -108,9 +109,7 @@ export default function Leaderboard({ onSelect, artists, setArtists, onSearch, s
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center">
-                      <span className="material-symbols-outlined text-outline text-[16px]">person</span>
-                    </div>
+                    <ArtistAvatar name={a.name} signal={a.signal} size="sm" />
                     <span className="font-bold text-on-surface group-hover:text-secondary transition-colors">
                       {a.name.charAt(0).toUpperCase() + a.name.slice(1)}
                     </span>

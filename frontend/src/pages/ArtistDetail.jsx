@@ -3,6 +3,7 @@ import axios from "axios"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import SignalBadge from "../components/SignalBadge"
 import InvestModal from "../components/InvestModal"
+import ArtistAvatar from "../components/ArtistAvatar"
 
 function formatNumber(n) {
   return n?.toLocaleString() ?? "—"
@@ -67,9 +68,7 @@ export default function ArtistDetail({ artist, onBack, user, setUser }) {
       {/* Artist Header */}
       <div className="glass-card rounded-xl p-8 mb-6 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <div className="w-16 h-16 rounded-xl bg-surface-variant flex items-center justify-center">
-            <span className="material-symbols-outlined text-outline text-[32px]">person</span>
-          </div>
+          <ArtistAvatar name={artist.name} signal={artist.signal} size="lg" />
           <div>
             <h1 className="text-3xl font-bold text-on-surface mb-2">
               {artist.name.charAt(0).toUpperCase() + artist.name.slice(1)}
