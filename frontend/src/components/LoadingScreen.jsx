@@ -23,7 +23,7 @@ export default function LoadingScreen() {
         </div>
 
         <div className="text-center">
-          <h1 className="text-secondary font-bold text-xl tracking-wide">UM Exchange</h1>
+          <h1 className="text-secondary font-bold text-xl tracking-wide">UMExchange</h1>
           <p className="text-outline font-mono text-xs uppercase tracking-widest mt-1 animate-pulse">
             Loading terminal...
           </p>

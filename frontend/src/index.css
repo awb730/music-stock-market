@@ -20,3 +20,36 @@
     border-left: 2px solid #4cd7f6;
   }
 }
+
+@keyframes gridPulse {
+  0% {
+    background-image:
+      linear-gradient(rgba(76, 215, 246, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(76, 215, 246, 0.15) 1px, transparent 1px);
+  }
+  25% {
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.2) 1px, transparent 1px);
+  }
+  50% {
+    background-image:
+      linear-gradient(rgba(168, 85, 247, 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(168, 85, 247, 0.2) 1px, transparent 1px);
+  }
+  75% {
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.2) 1px, transparent 1px);
+  }
+  100% {
+    background-image:
+      linear-gradient(rgba(76, 215, 246, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(76, 215, 246, 0.15) 1px, transparent 1px);
+  }
+}
+
+.grid-pulse {
+  background-size: 48px 48px;
+  animation: gridPulse 4s ease-in-out infinite;
+}

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import SignalBadge from "../components/SignalBadge"
 import ArtistAvatar from "../components/ArtistAvatar"
+import LoadingScreen from "../components/LoadingScreen"
+
 
 function StatCard({ icon, label, value, sub, subColor = "text-tertiary" }) {
   return (
@@ -68,11 +70,7 @@ export default function Leaderboard({ onSelect, artists, setArtists, onSearch, s
     }
   }, [artists.length, setArtists]) 
 
-  if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <p className="text-outline font-mono text-sm animate-pulse">Loading market data...</p>
-    </div>
-  )
+  if (loading) return <LoadingScreen />
 
   return (
     <div>
