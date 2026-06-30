@@ -54,11 +54,13 @@ app = FastAPI(title="Music Quant API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173", 
+        "http://localhost:5173",
         "https://music-stock-exchange.netlify.app"
     ],
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True,
+    expose_headers=["*"]
 )
 
 def get_all_artists():
