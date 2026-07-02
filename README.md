@@ -126,4 +126,4 @@ positions          — id, user_id, artist_id, direction, credits_wagered,
 
 ## Author
 
-Allen Baez - Computer Science student @ Montclair State University, as a portfolio project demonstrating full-stack data engineering, applied quantitative methods, and product thinking.
+Allen Baez - Senior CS student at Montclair State University, as a portfolio project demonstrating full-stack data engineering, applied quantitative methods, and product thinking.
